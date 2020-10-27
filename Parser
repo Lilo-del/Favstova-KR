@@ -74,3 +74,6 @@ for line in f_getcom:
     m=0
     f=0
  
+
+
+f_prolog.close()
