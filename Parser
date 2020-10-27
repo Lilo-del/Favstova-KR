@@ -1,0 +1,76 @@
+import re
+f_getcom = open ('my_tree.txt', 'r')
+f_prolog = open ('mytree.pl', 'w')
+ 
+ID = []
+NAME = []
+ 
+for string in f_getcom:
+  if (string[12:16] == "INDI"):
+    ID.append(string[3:10])
+
+
+ 
+  if (string[0:6] == "1 NAME"):
+    NAME.append(string[7:30])
+    
+ 
+  dictionary = dict(zip(ID, NAME))
+  #print(dictionary)
+ 
+f_getcom.seek(0, 0)
+ 
+father = " "
+mother = " "
+child = " "
+p=0
+i=0
+f=0
+m=0
+ 
+for line in f_getcom:
+  if (line[2:6] == "HUSB"):
+    f_id = line[8:15]
+    father = dictionary[f_id]
+    father = re.sub('[/]', '', father)
+    f=1
+ 
+  if (line[2:6] == "WIFE"):
+    m_id = line[8:15]
+    mother = dictionary[m_id]
+    mother = re.sub('[/]', '', mother)
+    m=1
+ 
+  if (line[2:6] == "CHIL"):
+    c_id = line[8:15]
+    child = dictionary[c_id]
+    child = re.sub('[/]', '', child)
+    i+=1
+  p=m+f
+  if ((p == 2) and (i == 1)):
+ 
+    result="father("+father+", "+child+")"
+    result=re.sub("\n", '', result)
+    result_="mother("+mother+", "+child+")"
+    result_=re.sub("\n", '', result_)
+    f_prolog.write(result+"\n")
+    f_prolog.write(result_+"\n")
+    i=0
+ 
+  if ((p<2) and (f==1)and (i == 1)):
+    result="father("+father+", "+child+")"
+    result=re.sub("\n", '', result)
+    f_prolog.write(result+"\n")
+    i=0
+ 
+  if ((p<2) and (m==1)and (i == 1)):
+    result="mother("+mother+", "+child+")"
+    result=re.sub("\n", '', result)
+    f_prolog.write(result+"\n")
+    i=0
+ 
+  if (line[12:15] == "FAM"):
+    p=0
+    m=0
+    f=0
+ 
